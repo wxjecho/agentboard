@@ -11,4 +11,6 @@ coverage/
 .idea/
 .vscode/
 sqlite.db
+*.db
 *.sqlite3
+backend/data/

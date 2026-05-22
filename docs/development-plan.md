@@ -1,45 +1,55 @@
-# Development Plan
+# 开发计划
 
-## Objective
+## 目标
 
-Build a local-first MVP of AgentBoard that can monitor multiple AI agents in real time and provide a path to production-oriented integrations later.
+构建 AgentBoard 的本地优先 MVP，先跑通多 Agent 实时监控闭环，再逐步接入真实的生产级 Agent 适配与通知能力。
 
-## Milestone 1: Local MVP
+## 里程碑 1：本地 MVP
 
 ### Backend
 
-- create FastAPI app entrypoint
-- define agent and event schemas
-- implement SQLite persistence
-- implement `POST /api/agents/register`
-- implement `POST /api/events`
-- implement `GET /api/agents`
-- implement `GET /api/agents/{id}`
-- implement `/ws/agents`
+- 搭建 FastAPI 应用入口
+- 定义 Agent、Event、Command Log、File Change 的数据模型
+- 实现 SQLite 持久化
+- 实现 `POST /api/agents/register`
+- 实现 `POST /api/events`
+- 实现 `GET /api/agents`
+- 实现 `GET /api/agents/{id}`
+- 实现 `/ws/agents`
+- 根据事件流推导 Agent 当前状态
 
 ### Frontend
 
-- create Vue 3 app with Vite
-- add dashboard shell and routing
-- build agent overview page
-- build agent detail page or drawer
-- subscribe to WebSocket stream
+- 搭建 Vue 3 + Vite 项目骨架
+- 增加 dashboard 路由和基础布局
+- 实现 Agent 总览页
+- 实现 Agent 详情页或详情抽屉
+- 订阅 WebSocket 实时流
+- 展示状态、日志、命令和文件修改记录
 
 ### Runner
 
-- create mock runner CLI
-- emit lifecycle, log, command, and file events
-- simulate heartbeat and completion flows
+- 实现 mock runner CLI
+- 模拟生命周期、日志、命令和文件修改事件
+- 模拟 heartbeat、等待输入和完成流程
+- 预留通用 CLI 包装器结构
 
-## Milestone 2: Real Integrations
+## 里程碑 2：真实 Agent 接入
 
-- map Claude Code hooks to internal events
-- add intervention markers and stuck-agent heuristics
-- add notifications
-- prepare adapter boundaries for Codex, cc, Gemini CLI, and others
+- 接入 Claude Code Hook 适配器
+- 接入通用 CLI Runner 适配器
+- 增加 workspace watcher 用于补采文件修改与活跃度
+- 增加人工介入标记和卡住检测
+- 增加通知能力
 
-## Notes
+## 接入优先级
 
-- Redis is optional in the first milestone and can be added after the local real-time flow is stable.
-- SQLite is sufficient for the first closed-loop version.
-- The backend event model should stay generic enough to support multiple agent vendors.
+1. Claude Code：优先通过官方 Hooks 接入，跑通高质量事件链路。
+2. Codex CLI：通过统一 runner 包装启动和上报，补齐当前高频使用场景。
+3. Gemini CLI、cc、OpenCode：复用同一套通用 CLI 适配层，不单独设计后端协议。
+
+## 备注
+
+- Redis 在第一阶段不是必需，可以在本地实时链路稳定后再接入。
+- SQLite 足够支撑第一版闭环验证。
+- 后端事件模型必须保持通用，不能让某个 Agent 的专有字段直接污染整体协议。
