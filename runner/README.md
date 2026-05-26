@@ -24,6 +24,13 @@
 - 当检测到重连 / 超时特征时，自动把状态切到 `blocked`
 - 自动轮询工作目录并上报 `file_created / file_modified / file_deleted`
 
+同时已经提供 `Codex` Hook 适配器：
+
+- 面向真实长期交互式 Codex CLI 会话
+- 基于项目级 `.codex/hooks.json`
+- 持续上报会话状态、命令、文件修改和等待输入
+- 一轮回答结束后把状态切到 `idle`，而不是直接标记完成
+
 同时已经提供通用 `generic_cli_runner`：
 
 - 用同一套 runner 机制接入非 Codex CLI Agent
@@ -58,6 +65,23 @@ python3 runner/mock_runner.py --dry-run
 
 ## 真实 Codex Runner
 
+如果你不想每次手写完整路径，也可以直接用仓库里的短命令脚本：
+
+```bash
+cd /path/to/your/project
+/Users/wuxinji/code/agentboard/bin/codexb \
+  --task "验证真实 Codex 接入" \
+  --prompt "请先阅读 README，然后总结当前项目结构"
+```
+
+这个脚本会自动补上：
+
+- `--backend http://127.0.0.1:8000`
+- `--project` = 当前目录名
+- `--cwd` = 当前目录
+
+如果你要覆盖默认值，依然可以继续追加 `--backend`、`--project`、`--cwd`。
+
 在仓库根目录执行：
 
 ```bash
@@ -74,6 +98,23 @@ python3 runner/codex_runner.py \
 ```bash
 --dry-run
 ```
+
+## Codex Hook Adapter
+
+如果你希望接入长期交互式 Codex，会比 `codex exec` 更适合用 hook：
+
+```bash
+cd /Users/wuxinji/code/agentboard
+codex
+```
+
+项目里已经包含：
+
+- [runner/codex_hook_adapter.py](/Users/wuxinji/code/agentboard/runner/codex_hook_adapter.py)
+- [.codex/hooks.json](/Users/wuxinji/code/agentboard/.codex/hooks.json)
+- [docs/codex-hooks-setup.md](/Users/wuxinji/code/agentboard/docs/codex-hooks-setup.md)
+
+这样启动的 Codex 长期会话会自动进入 AgentBoard。
 
 ## 通用 CLI Runner
 

@@ -129,6 +129,10 @@ python3 runner/mock_runner.py --backend http://127.0.0.1:8000 --agents 3 --scena
 
 AgentBoard 目前支持三种接入方式。
 
+如果你想先看一份统一的选择说明，建议先读：
+
+- [real-agent-integration-guide.md](/Users/wuxinji/code/agentboard/docs/real-agent-integration-guide.md)
+
 ### 5.1 Codex CLI
 
 如果你本来是这样运行：
@@ -157,6 +161,17 @@ python3 runner/codex_runner.py \
 - `blocked` 检测
 - 文件修改监听
 - 完成 / 失败上报
+
+如果你需要的是长期交互式 Codex，而不是一次性 `exec` 任务，更适合改用项目级 hook：
+
+```bash
+cd /Users/wuxinji/code/agentboard
+codex
+```
+
+详细说明见：
+
+- [codex-hooks-setup.md](/Users/wuxinji/code/agentboard/docs/codex-hooks-setup.md)
 
 如果你想看看最终会执行什么命令，但不真的启动 `codex`：
 

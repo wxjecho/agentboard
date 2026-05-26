@@ -77,9 +77,26 @@ python3 runner/mock_runner.py --agents 3 --scenario attention
 ## 安装部署与接入
 
 - 安装部署指南： [docs/install-and-cli-guide.md](/Users/wuxinji/code/agentboard/docs/install-and-cli-guide.md)
+- 真实 Agent 接入总说明： [docs/real-agent-integration-guide.md](/Users/wuxinji/code/agentboard/docs/real-agent-integration-guide.md)
 - 本地运行说明： [docs/local-runbook.md](/Users/wuxinji/code/agentboard/docs/local-runbook.md)
 - Claude Code Hooks 接入： [docs/claude-hooks-setup.md](/Users/wuxinji/code/agentboard/docs/claude-hooks-setup.md)
+- Codex Hooks 接入： [docs/codex-hooks-setup.md](/Users/wuxinji/code/agentboard/docs/codex-hooks-setup.md)
 - Runner 说明： [runner/README.md](/Users/wuxinji/code/agentboard/runner/README.md)
+
+如果你想用更短的命令接入真实 Codex，也可以直接运行仓库里的包装脚本：
+
+```bash
+cd /path/to/your/project
+/Users/wuxinji/code/agentboard/bin/codexb \
+  --task "总结项目结构" \
+  --prompt "请总结当前项目结构"
+```
+
+它会默认使用：
+
+- `--backend http://127.0.0.1:8000`
+- `--project` = 当前目录名
+- `--cwd` = 当前目录
 
 ## 当前能力
 
@@ -87,6 +104,7 @@ python3 runner/mock_runner.py --agents 3 --scenario attention
 - 前端面板：总览、详情时间线、命令记录、文件修改、通知中心、提示音、强提醒
 - Mock Runner：稳定模拟多 Agent 事件流
 - 真实 Codex Runner：启动真实 `codex exec` 并持续上报
+- 真实 Codex Hooks：接入长期交互式 Codex CLI 会话
 - 通用 CLI Runner：接入 `Gemini CLI`、`cc`、`OpenCode` 等命令行 Agent
 - Claude Hook Adapter：接入真实 Claude Code Hooks
 - Workspace Watcher：自动上报文件创建、修改、删除
