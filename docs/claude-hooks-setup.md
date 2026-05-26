@@ -6,7 +6,7 @@
 
 当前适配脚本：
 
-- [runner/claude_hook_adapter.py](/Users/wuxinji/code/agentboard/runner/claude_hook_adapter.py)
+- [runner/claude_hook_adapter.py](../runner/claude_hook_adapter.py)
 
 它会把以下 Hook 事件映射到 AgentBoard：
 
@@ -131,7 +131,7 @@
 
 ## 行为说明
 
-- 脚本通过 `session_id` 在 `/private/tmp/agentboard_claude_sessions.json` 里维护本地映射
+- 脚本通过 `session_id` 在系统临时目录中的 `agentboard_claude_sessions.json` 里维护本地映射
 - `task` 会优先取最近一次 `UserPromptSubmit` 的 prompt 摘要
 - 对 `Bash` 工具会记录命令开始/结束
 - 对 `Edit`、`Write`、`MultiEdit`、`NotebookEdit` 会记录文件创建/修改
@@ -144,7 +144,7 @@
 ```bash
 echo '{
   "session_id": "demo-session",
-  "cwd": "/Users/wuxinji/code/agentboard",
+  "cwd": "/path/to/agentboard",
   "hook_event_name": "Notification",
   "message": "Claude is waiting for your approval",
   "notification_type": "permission_prompt"

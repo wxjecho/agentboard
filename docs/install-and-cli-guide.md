@@ -131,7 +131,7 @@ AgentBoard 目前支持三种接入方式。
 
 如果你想先看一份统一的选择说明，建议先读：
 
-- [real-agent-integration-guide.md](/Users/wuxinji/code/agentboard/docs/real-agent-integration-guide.md)
+- [real-agent-integration-guide.md](real-agent-integration-guide.md)
 
 ### 5.1 Codex CLI
 
@@ -165,13 +165,13 @@ python3 runner/codex_runner.py \
 如果你需要的是长期交互式 Codex，而不是一次性 `exec` 任务，更适合改用项目级 hook：
 
 ```bash
-cd /Users/wuxinji/code/agentboard
+cd /path/to/agentboard
 codex
 ```
 
 详细说明见：
 
-- [codex-hooks-setup.md](/Users/wuxinji/code/agentboard/docs/codex-hooks-setup.md)
+- [codex-hooks-setup.md](codex-hooks-setup.md)
 
 如果你想看看最终会执行什么命令，但不真的启动 `codex`：
 
@@ -225,7 +225,7 @@ Claude Code 更适合走 Hook，而不是外层进程包装。
 接入步骤：
 
 1. 确保 AgentBoard 后端已经运行
-2. 按 [claude-hooks-setup.md](/Users/wuxinji/code/agentboard/docs/claude-hooks-setup.md) 配置 `.claude/settings.json`
+2. 按 [claude-hooks-setup.md](claude-hooks-setup.md) 配置 `.claude/settings.json`
 3. 把 hook 命令指向：
 
 ```bash

@@ -6,11 +6,11 @@
 
 当前适配脚本：
 
-- [runner/codex_hook_adapter.py](/Users/wuxinji/code/agentboard/runner/codex_hook_adapter.py)
+- [runner/codex_hook_adapter.py](../runner/codex_hook_adapter.py)
 
 当前项目级 hook 配置：
 
-- [.codex/hooks.json](/Users/wuxinji/code/agentboard/.codex/hooks.json)
+- [.codex/hooks.json](../.codex/hooks.json)
 
 如果你希望在任意目录启动 `codex` 都自动进入 AgentBoard，还可以额外配置全局 hook：
 
@@ -36,26 +36,26 @@
 先启动 AgentBoard 后端和前端：
 
 ```bash
-cd /Users/wuxinji/code/agentboard/backend
+cd /path/to/agentboard/backend
 ./.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
 ```bash
-cd /Users/wuxinji/code/agentboard/frontend
+cd /path/to/agentboard/frontend
 npm run dev -- --host 0.0.0.0 --port 4173
 ```
 
 然后在 `agentboard` 仓库内直接启动 Codex 交互会话：
 
 ```bash
-cd /Users/wuxinji/code/agentboard
+cd /path/to/agentboard
 codex
 ```
 
 或者：
 
 ```bash
-cd /Users/wuxinji/code/agentboard
+cd /path/to/agentboard
 codex "请阅读 README 并总结项目结构"
 ```
 
@@ -81,7 +81,7 @@ codex "请阅读 README 并总结项目结构"
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"/Users/wuxinji/code/agentboard/runner/codex_hook_adapter.py\" --backend http://127.0.0.1:8000"
+            "command": "python3 \"/path/to/agentboard/runner/codex_hook_adapter.py\" --backend http://127.0.0.1:8000"
           }
         ]
       }
@@ -92,7 +92,7 @@ codex "请阅读 README 并总结项目结构"
 
 ## 行为说明
 
-- 脚本通过 `session_id` 在 `/private/tmp/agentboard_codex_sessions.json` 中维护会话映射
+- 脚本通过 `session_id` 在系统临时目录中的 `agentboard_codex_sessions.json` 中维护会话映射
 - `agent_id` 会稳定映射为 `codex-<session_id前缀>`，便于同一长期会话持续更新
 - `task` 会优先使用最近一次用户 prompt 的摘要
 - `Bash` 工具会记录命令开始/结束
@@ -120,7 +120,7 @@ codex --dangerously-bypass-hook-trust
 echo '{
   "hook_event_name": "SessionStart",
   "session_id": "demo-session",
-  "cwd": "/Users/wuxinji/code/agentboard",
+  "cwd": "/path/to/agentboard",
   "source": "startup",
   "model": "gpt-5.4"
 }' | python3 runner/codex_hook_adapter.py --dry-run
@@ -132,7 +132,7 @@ echo '{
 echo '{
   "hook_event_name": "Stop",
   "session_id": "demo-session",
-  "cwd": "/Users/wuxinji/code/agentboard",
+  "cwd": "/path/to/agentboard",
   "last_assistant_message": "README 已阅读完毕。"
 }' | python3 runner/codex_hook_adapter.py --dry-run
 ```

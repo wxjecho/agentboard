@@ -59,7 +59,7 @@ npm run dev
 3. 运行 mock runner
 
 ```bash
-cd /Users/wuxinji/code/agentboard
+cd /path/to/agentboard
 python3 runner/mock_runner.py --agents 3
 ```
 
@@ -76,18 +76,18 @@ python3 runner/mock_runner.py --agents 3 --scenario attention
 
 ## 安装部署与接入
 
-- 安装部署指南： [docs/install-and-cli-guide.md](/Users/wuxinji/code/agentboard/docs/install-and-cli-guide.md)
-- 真实 Agent 接入总说明： [docs/real-agent-integration-guide.md](/Users/wuxinji/code/agentboard/docs/real-agent-integration-guide.md)
-- 本地运行说明： [docs/local-runbook.md](/Users/wuxinji/code/agentboard/docs/local-runbook.md)
-- Claude Code Hooks 接入： [docs/claude-hooks-setup.md](/Users/wuxinji/code/agentboard/docs/claude-hooks-setup.md)
-- Codex Hooks 接入： [docs/codex-hooks-setup.md](/Users/wuxinji/code/agentboard/docs/codex-hooks-setup.md)
-- Runner 说明： [runner/README.md](/Users/wuxinji/code/agentboard/runner/README.md)
+- 安装部署指南： [docs/install-and-cli-guide.md](docs/install-and-cli-guide.md)
+- 真实 Agent 接入总说明： [docs/real-agent-integration-guide.md](docs/real-agent-integration-guide.md)
+- 本地运行说明： [docs/local-runbook.md](docs/local-runbook.md)
+- Claude Code Hooks 接入： [docs/claude-hooks-setup.md](docs/claude-hooks-setup.md)
+- Codex Hooks 接入： [docs/codex-hooks-setup.md](docs/codex-hooks-setup.md)
+- Runner 说明： [runner/README.md](runner/README.md)
 
 如果你想用更短的命令接入真实 Codex，也可以直接运行仓库里的包装脚本：
 
 ```bash
 cd /path/to/your/project
-/Users/wuxinji/code/agentboard/bin/codexb \
+/path/to/agentboard/bin/codexb \
   --task "总结项目结构" \
   --prompt "请总结当前项目结构"
 ```

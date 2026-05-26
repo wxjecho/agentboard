@@ -35,8 +35,8 @@ Claude 更适合走官方 Hooks，而不是外层进程包装。
 
 当前实现：
 
-- 适配器：[claude_hook_adapter.py](/Users/wuxinji/code/agentboard/runner/claude_hook_adapter.py)
-- 说明文档：[claude-hooks-setup.md](/Users/wuxinji/code/agentboard/docs/claude-hooks-setup.md)
+- 适配器：[claude_hook_adapter.py](../runner/claude_hook_adapter.py)
+- 说明文档：[claude-hooks-setup.md](claude-hooks-setup.md)
 
 接入方式：
 
@@ -66,8 +66,8 @@ Codex 现在有两种接入方式，但用途不同。
 
 当前实现：
 
-- 适配器：[codex_hook_adapter.py](/Users/wuxinji/code/agentboard/runner/codex_hook_adapter.py)
-- 说明文档：[codex-hooks-setup.md](/Users/wuxinji/code/agentboard/docs/codex-hooks-setup.md)
+- 适配器：[codex_hook_adapter.py](../runner/codex_hook_adapter.py)
+- 说明文档：[codex-hooks-setup.md](codex-hooks-setup.md)
 
 接入位置：
 
@@ -101,7 +101,7 @@ Codex 现在有两种接入方式，但用途不同。
 
 当前实现：
 
-- 脚本：[codex_runner.py](/Users/wuxinji/code/agentboard/runner/codex_runner.py)
+- 脚本：[codex_runner.py](../runner/codex_runner.py)
 
 它本质上包装的是：
 
@@ -125,7 +125,7 @@ codex exec ...
 
 当前实现：
 
-- 脚本：[generic_cli_runner.py](/Users/wuxinji/code/agentboard/runner/generic_cli_runner.py)
+- 脚本：[generic_cli_runner.py](../runner/generic_cli_runner.py)
 
 适用对象：
 
@@ -163,7 +163,7 @@ codex exec ...
 
 ## 相关文档
 
-- [claude-hooks-setup.md](/Users/wuxinji/code/agentboard/docs/claude-hooks-setup.md)
-- [codex-hooks-setup.md](/Users/wuxinji/code/agentboard/docs/codex-hooks-setup.md)
-- [install-and-cli-guide.md](/Users/wuxinji/code/agentboard/docs/install-and-cli-guide.md)
-- [runner/README.md](/Users/wuxinji/code/agentboard/runner/README.md)
+- [claude-hooks-setup.md](claude-hooks-setup.md)
+- [codex-hooks-setup.md](codex-hooks-setup.md)
+- [install-and-cli-guide.md](install-and-cli-guide.md)
+- [runner/README.md](../runner/README.md)

@@ -4,7 +4,7 @@
 
 如果你想直接看安装和接入步骤，优先阅读：
 
-- [docs/install-and-cli-guide.md](/Users/wuxinji/code/agentboard/docs/install-and-cli-guide.md)
+- [docs/install-and-cli-guide.md](../docs/install-and-cli-guide.md)
 
 ## 当前实现
 
@@ -69,7 +69,7 @@ python3 runner/mock_runner.py --dry-run
 
 ```bash
 cd /path/to/your/project
-/Users/wuxinji/code/agentboard/bin/codexb \
+/path/to/agentboard/bin/codexb \
   --task "验证真实 Codex 接入" \
   --prompt "请先阅读 README，然后总结当前项目结构"
 ```
@@ -104,15 +104,15 @@ python3 runner/codex_runner.py \
 如果你希望接入长期交互式 Codex，会比 `codex exec` 更适合用 hook：
 
 ```bash
-cd /Users/wuxinji/code/agentboard
+cd /path/to/agentboard
 codex
 ```
 
 项目里已经包含：
 
-- [runner/codex_hook_adapter.py](/Users/wuxinji/code/agentboard/runner/codex_hook_adapter.py)
-- [.codex/hooks.json](/Users/wuxinji/code/agentboard/.codex/hooks.json)
-- [docs/codex-hooks-setup.md](/Users/wuxinji/code/agentboard/docs/codex-hooks-setup.md)
+- [runner/codex_hook_adapter.py](codex_hook_adapter.py)
+- [.codex/hooks.json](../.codex/hooks.json)
+- [docs/codex-hooks-setup.md](../docs/codex-hooks-setup.md)
 
 这样启动的 Codex 长期会话会自动进入 AgentBoard。
 
@@ -153,7 +153,7 @@ python3 runner/claude_hook_adapter.py --backend http://127.0.0.1:8000
 
 完整接入说明见：
 
-- [docs/claude-hooks-setup.md](/Users/wuxinji/code/agentboard/docs/claude-hooks-setup.md)
+- [docs/claude-hooks-setup.md](../docs/claude-hooks-setup.md)
 
 ## 主要参数
 

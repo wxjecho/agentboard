@@ -13,7 +13,7 @@
 进入后端目录：
 
 ```bash
-cd /Users/wuxinji/code/agentboard/backend
+cd /path/to/agentboard/backend
 ```
 
 安装依赖：
@@ -48,7 +48,7 @@ http://127.0.0.1:8000
 进入前端目录：
 
 ```bash
-cd /Users/wuxinji/code/agentboard/frontend
+cd /path/to/agentboard/frontend
 ```
 
 安装依赖：
@@ -80,7 +80,7 @@ VITE_API_BASE_URL=http://127.0.0.1:8000
 回到仓库根目录：
 
 ```bash
-cd /Users/wuxinji/code/agentboard
+cd /path/to/agentboard
 ```
 
 运行模拟事件流：
@@ -114,25 +114,25 @@ python3 runner/mock_runner.py --agents 2 --interval 0 --dry-run
 ### Codex
 
 ```bash
-cd /Users/wuxinji/code/agentboard
+cd /path/to/agentboard
 python3 runner/codex_runner.py \
   --backend http://127.0.0.1:8000 \
   --project agentboard \
   --task "验证真实 Codex 接入" \
-  --cwd /Users/wuxinji/code/agentboard \
+  --cwd /path/to/agentboard \
   --prompt "请总结当前项目结构"
 ```
 
 ### 通用 CLI
 
 ```bash
-cd /Users/wuxinji/code/agentboard
+cd /path/to/agentboard
 python3 runner/generic_cli_runner.py \
   --backend http://127.0.0.1:8000 \
   --agent-type cc \
   --project agentboard \
   --task "验证通用 CLI 接入" \
-  --cwd /Users/wuxinji/code/agentboard \
+  --cwd /path/to/agentboard \
   -- \
   cc "请总结当前项目结构"
 ```
@@ -141,7 +141,7 @@ python3 runner/generic_cli_runner.py \
 
 完整说明见：
 
-- [docs/claude-hooks-setup.md](/Users/wuxinji/code/agentboard/docs/claude-hooks-setup.md)
+- [docs/claude-hooks-setup.md](claude-hooks-setup.md)
 
 ## 6. 当前已知边界
 
