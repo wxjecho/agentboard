@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import re
+import shlex
 import sys
 import tempfile
 import uuid
@@ -179,7 +180,27 @@ def build_hooks_config(command: str) -> dict[str, Any]:
     }
 
 
-def install_hooks(settings_path: Path, backend: str) -> None:
+def merge_event_hooks(existing: Any, generated: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    if not isinstance(existing, list):
+        return generated
+
+    merged = list(existing)
+    seen = {
+        json.dumps(item, ensure_ascii=False, sort_keys=True)
+        for item in existing
+        if isinstance(item, dict)
+    }
+
+    for item in generated:
+        marker = json.dumps(item, ensure_ascii=False, sort_keys=True)
+        if marker not in seen:
+            merged.append(item)
+            seen.add(marker)
+
+    return merged
+
+
+def install_hooks(settings_path: Path, backend: str, python_bin: str) -> None:
     settings_path.parent.mkdir(parents=True, exist_ok=True)
     if settings_path.exists():
         try:
@@ -198,10 +219,10 @@ def install_hooks(settings_path: Path, backend: str) -> None:
     elif not isinstance(hooks, dict):
         raise RuntimeError("Existing settings.json has a non-object 'hooks' field")
 
-    command = f'python3 "{Path(__file__).resolve()}" --backend {backend}'
+    command = f"{shlex.quote(python_bin)} {shlex.quote(str(Path(__file__).resolve()))} --backend {shlex.quote(backend)}"
     generated = build_hooks_config(command)["hooks"]
     for event_name in HOOK_EVENT_NAMES:
-        hooks[event_name] = generated[event_name]
+        hooks[event_name] = merge_event_hooks(hooks.get(event_name), generated[event_name])
 
     settings_path.write_text(json.dumps(settings, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
@@ -488,6 +509,11 @@ def parse_args() -> argparse.Namespace:
         default="",
         help="Optional settings.json target path used with --install (default: .claude/settings.json in cwd)",
     )
+    parser.add_argument(
+        "--python-bin",
+        default=sys.executable or "python3",
+        help="Python executable written into installed hook commands (default: current interpreter)",
+    )
     return parser.parse_args()
 
 
@@ -496,7 +522,7 @@ def main() -> int:
     if args.install:
         settings_path = Path(args.settings_path).expanduser() if args.settings_path else Path.cwd() / ".claude" / "settings.json"
         try:
-            install_hooks(settings_path, args.backend)
+            install_hooks(settings_path, args.backend, args.python_bin)
             print(f"Installed Claude hooks into {settings_path}")
             return 0
         except RuntimeError as exc:

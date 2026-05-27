@@ -14,6 +14,14 @@
 python3 runner/claude_hook_adapter.py --install --backend http://127.0.0.1:8000
 ```
 
+默认会把你当前执行这个命令时使用的 Python 解释器路径写进 hook 命令里，不再硬编码 `python3`。如果你的机器上有多个 Python，或者默认 `python3` 版本太低，可以显式指定：
+
+```bash
+python3 runner/claude_hook_adapter.py --install \
+  --backend http://127.0.0.1:8000 \
+  --python-bin /usr/bin/python3.11
+```
+
 它会把以下 Hook 事件映射到 AgentBoard：
 
 - `SessionStart` -> `agent_started`
@@ -141,11 +149,22 @@ python3 runner/claude_hook_adapter.py --install --backend http://127.0.0.1:8000
 python3 runner/claude_hook_adapter.py --install --backend http://127.0.0.1:8000
 ```
 
-默认会写入当前目录下的 `.claude/settings.json`。如果你想指定路径，可以追加：
+默认会写入当前目录下的 `.claude/settings.json`。安装器会把 AgentBoard hook 追加到已有事件配置后面，不会覆盖你原本的其他 hook。
+
+如果你想指定路径，可以追加：
 
 ```bash
 python3 runner/claude_hook_adapter.py --install \
   --backend http://127.0.0.1:8000 \
+  --settings-path /path/to/project/.claude/settings.json
+```
+
+如果你想强制写入某个特定 Python 解释器，也可以一起传：
+
+```bash
+python3 runner/claude_hook_adapter.py --install \
+  --backend http://127.0.0.1:8000 \
+  --python-bin /usr/bin/python3.11 \
   --settings-path /path/to/project/.claude/settings.json
 ```
 

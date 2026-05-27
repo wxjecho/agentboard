@@ -231,8 +231,24 @@ Claude Code 更适合走 Hook，而不是外层进程包装。
 接入步骤：
 
 1. 确保 AgentBoard 后端已经运行
-2. 按 [claude-hooks-setup.md](claude-hooks-setup.md) 配置 `.claude/settings.json`
-3. 把 hook 命令指向：
+2. 推荐直接执行一键安装：
+
+```bash
+cd /path/to/agentboard
+python3 runner/claude_hook_adapter.py --install --backend http://127.0.0.1:8000
+```
+
+3. 如果目标机器默认 `python3` 太旧，也可以显式指定解释器：
+
+```bash
+python3 runner/claude_hook_adapter.py --install \
+  --backend http://127.0.0.1:8000 \
+  --python-bin /usr/bin/python3.11
+```
+
+4. 安装器会把 AgentBoard hooks 追加到现有 `.claude/settings.json` 的对应事件下，不会覆盖你已有的其他 hooks。
+
+5. 如果你仍然想手动配置，hook 命令应指向：
 
 ```bash
 python3 "/path/to/agentboard/runner/claude_hook_adapter.py" --backend http://127.0.0.1:8000
