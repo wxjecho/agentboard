@@ -438,6 +438,11 @@ export const useAgentsStore = defineStore("agents", {
       writeNotificationPreference(this.browserNotificationsEnabled);
     },
 
+    disableBrowserNotifications() {
+      this.browserNotificationsEnabled = false;
+      writeNotificationPreference(false);
+    },
+
     async enableSoundNotifications() {
       const AudioContextClass = getAudioContextClass();
       if (!AudioContextClass) {
@@ -461,6 +466,7 @@ export const useAgentsStore = defineStore("agents", {
 
     disableSoundNotifications() {
       this.soundNotificationsEnabled = false;
+      this.soundReady = false;
       writeSoundPreference(false);
     },
 

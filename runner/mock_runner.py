@@ -84,6 +84,7 @@ class BackendClient:
             "agent_type": agent.agent_type,
             "project": agent.project,
             "task": agent.task,
+            "cwd": agent.cwd,
             "event_type": event_type,
             "timestamp": iso_now(),
             "payload": payload or {},

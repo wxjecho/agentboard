@@ -92,7 +92,7 @@ codex "请阅读 README 并总结项目结构"
 
 ## 行为说明
 
-- 脚本通过 `session_id` 在系统临时目录中的 `agentboard_codex_sessions.json` 中维护会话映射
+- 脚本通过 `session_id` 在 `tempfile.gettempdir()` 对应的系统临时目录中维护 `agentboard_codex_sessions.json`
 - `agent_id` 会稳定映射为 `codex-<session_id前缀>`，便于同一长期会话持续更新
 - `task` 会优先使用最近一次用户 prompt 的摘要
 - `Bash` 工具会记录命令开始/结束

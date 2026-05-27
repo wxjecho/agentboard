@@ -21,6 +21,7 @@ class EventIngestRequest(BaseModel):
     agent_type: str = Field(min_length=1, max_length=64)
     project: str = Field(min_length=1, max_length=128)
     task: str = Field(min_length=1)
+    cwd: Optional[str] = None
     event_type: str = Field(min_length=1, max_length=64)
     timestamp: Optional[datetime] = None
     payload: dict[str, Any] = Field(default_factory=dict)

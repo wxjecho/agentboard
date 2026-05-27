@@ -8,6 +8,12 @@
 
 - [runner/claude_hook_adapter.py](../runner/claude_hook_adapter.py)
 
+也可以直接用一键安装：
+
+```bash
+python3 runner/claude_hook_adapter.py --install --backend http://127.0.0.1:8000
+```
+
 它会把以下 Hook 事件映射到 AgentBoard：
 
 - `SessionStart` -> `agent_started`
@@ -129,9 +135,23 @@
 }
 ```
 
+如果你不想手动编辑，可以在项目根目录执行：
+
+```bash
+python3 runner/claude_hook_adapter.py --install --backend http://127.0.0.1:8000
+```
+
+默认会写入当前目录下的 `.claude/settings.json`。如果你想指定路径，可以追加：
+
+```bash
+python3 runner/claude_hook_adapter.py --install \
+  --backend http://127.0.0.1:8000 \
+  --settings-path /path/to/project/.claude/settings.json
+```
+
 ## 行为说明
 
-- 脚本通过 `session_id` 在系统临时目录中的 `agentboard_claude_sessions.json` 里维护本地映射
+- 脚本通过 `session_id` 在 `tempfile.gettempdir()` 对应的系统临时目录中维护 `agentboard_claude_sessions.json`
 - `task` 会优先取最近一次 `UserPromptSubmit` 的 prompt 摘要
 - 对 `Bash` 工具会记录命令开始/结束
 - 对 `Edit`、`Write`、`MultiEdit`、`NotebookEdit` 会记录文件创建/修改

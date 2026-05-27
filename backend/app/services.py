@@ -102,12 +102,34 @@ def register_agent(session: Session, payload: schemas.AgentRegisterRequest) -> m
     return agent
 
 
-def ingest_event(session: Session, payload: schemas.EventIngestRequest) -> tuple[models.Agent, models.Event]:
+def ensure_agent_for_event(
+    session: Session,
+    payload: schemas.EventIngestRequest,
+    event_timestamp: datetime,
+) -> models.Agent:
     agent = session.get(models.Agent, payload.agent_id)
-    if agent is None:
-        raise HTTPException(status_code=404, detail=f"Agent '{payload.agent_id}' is not registered")
+    if agent is not None:
+        return agent
 
+    agent = models.Agent(
+        id=payload.agent_id,
+        agent_type=payload.agent_type,
+        project=payload.project,
+        task=payload.task,
+        cwd=str(payload.cwd or payload.payload.get("cwd") or payload.project),
+        source="auto",
+        status="running",
+        started_at=event_timestamp,
+        last_active_at=event_timestamp,
+    )
+    session.add(agent)
+    session.flush()
+    return agent
+
+
+def ingest_event(session: Session, payload: schemas.EventIngestRequest) -> tuple[models.Agent, models.Event]:
     event_timestamp = payload.timestamp or utc_now()
+    agent = ensure_agent_for_event(session, payload, event_timestamp)
     event = models.Event(
         agent_id=payload.agent_id,
         event_type=payload.event_type,
@@ -141,6 +163,8 @@ def ingest_event(session: Session, payload: schemas.EventIngestRequest) -> tuple
     agent.agent_type = payload.agent_type
     agent.project = payload.project
     agent.task = payload.task
+    if payload.cwd:
+        agent.cwd = payload.cwd
     agent.status = next_status
     agent.last_active_at = event_timestamp
     agent.needs_intervention = agent.needs_intervention or needs_intervention

@@ -18,6 +18,28 @@ const notifications = computed(() => store.latestNotifications);
 const missedNotifications = computed(() => store.latestMissedNotifications);
 const toastNotifications = computed(() => store.toastNotifications);
 const primaryActiveAlert = computed(() => store.primaryActiveAlert);
+const browserNotificationActionLabel = computed(() => (
+  store.browserNotificationsEnabled ? "关闭系统通知" : "开启系统通知"
+));
+const soundNotificationActionLabel = computed(() => (
+  store.soundNotificationsEnabled ? "关闭提示音" : "开启提示音"
+));
+
+async function toggleBrowserNotifications() {
+  if (store.browserNotificationsEnabled) {
+    store.disableBrowserNotifications();
+    return;
+  }
+  await store.requestBrowserNotifications();
+}
+
+async function toggleSoundNotifications() {
+  if (store.soundNotificationsEnabled) {
+    store.disableSoundNotifications();
+    return;
+  }
+  await store.enableSoundNotifications();
+}
 
 function handleVisibilityChange() {
   store.setPageVisible(document.visibilityState === "visible");
@@ -92,8 +114,12 @@ onBeforeUnmount(() => {
               <strong>重要时刻把你叫回来</strong>
             </div>
             <div class="notify-actions">
-              <button class="ghost-button" type="button" @click="store.requestBrowserNotifications()">开启系统通知</button>
-              <button class="ghost-button" type="button" @click="store.enableSoundNotifications()">开启提示音</button>
+              <button class="ghost-button" type="button" @click="toggleBrowserNotifications()">
+                {{ browserNotificationActionLabel }}
+              </button>
+              <button class="ghost-button" type="button" @click="toggleSoundNotifications()">
+                {{ soundNotificationActionLabel }}
+              </button>
             </div>
           </div>
           <p>{{ store.describeBrowserNotifications() }}</p>

@@ -66,6 +66,7 @@ class BackendClient:
             "agent_type": session.agent_type,
             "project": session.project,
             "task": session.task,
+            "cwd": session.cwd,
             "event_type": event_type,
             "timestamp": iso_now(),
             "payload": payload or {},

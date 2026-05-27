@@ -10,6 +10,7 @@ dist/
 coverage/
 .idea/
 .vscode/
+.codex/
 sqlite.db
 *.db
 *.sqlite3

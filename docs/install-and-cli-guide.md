@@ -65,7 +65,7 @@ cd ..
 ```bash
 cd backend
 source .venv/bin/activate
-uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 启动前端：
@@ -80,6 +80,12 @@ npm run dev -- --host 127.0.0.1 --port 4173
 - 前端：`http://127.0.0.1:4173`
 - 后端：`http://127.0.0.1:8000`
 - 健康检查：`http://127.0.0.1:8000/health`
+
+如果前端和后端不在同一台机器，或者你通过远端浏览器访问前端，请额外设置：
+
+```bash
+VITE_API_BASE_URL=http://your-server-ip:8000
+```
 
 ### 方式 B：本机常驻
 
@@ -233,6 +239,12 @@ python3 "/path/to/agentboard/runner/claude_hook_adapter.py" --backend http://127
 ```
 
 完成后，Claude 的会话开始、工具调用、通知、结束事件就会进入 AgentBoard。
+
+如果你想自动写入配置，也可以直接执行：
+
+```bash
+python3 runner/claude_hook_adapter.py --install --backend http://127.0.0.1:8000
+```
 
 ## 6. 推荐的“自己用”方式
 

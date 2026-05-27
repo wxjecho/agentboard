@@ -5,6 +5,7 @@ import json
 import os
 import re
 import sys
+import tempfile
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -14,7 +15,7 @@ from urllib import error, request
 
 
 DEFAULT_BACKEND = "http://127.0.0.1:8000"
-STATE_FILE = Path("/private/tmp/agentboard_codex_sessions.json")
+STATE_FILE = Path(tempfile.gettempdir()) / "agentboard_codex_sessions.json"
 MAX_TASK_LENGTH = 120
 
 
@@ -55,6 +56,7 @@ class BackendClient:
             "agent_type": session.agent_type,
             "project": session.project,
             "task": session.task,
+            "cwd": session.cwd,
             "event_type": event_type,
             "timestamp": iso_now(),
             "payload": payload or {},
@@ -99,8 +101,31 @@ def load_state() -> dict[str, dict[str, Any]]:
 def save_state(state: dict[str, dict[str, Any]]) -> None:
     try:
         STATE_FILE.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
-    except OSError:
-        pass
+    except OSError as exc:
+        print(f"Could not persist Codex hook state to {STATE_FILE}: {exc}", file=sys.stderr)
+
+
+def load_stdin_json() -> dict[str, Any] | None:
+    chunks: list[bytes] = []
+    while True:
+        data = os.read(0, 65536)
+        if not data:
+            break
+        chunks.append(data)
+
+    if not chunks:
+        return None
+
+    raw = b"".join(chunks).decode("utf-8", errors="replace").strip()
+    if not raw:
+        return None
+
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError:
+        return None
+
+    return payload if isinstance(payload, dict) else None
 
 
 def summarize_task(text: str) -> str:
@@ -417,11 +442,9 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    try:
-        payload = json.load(sys.stdin)
-    except json.JSONDecodeError as exc:
-        print(f"Invalid Codex hook payload: {exc}", file=sys.stderr)
-        return 1
+    payload = load_stdin_json()
+    if payload is None:
+        return 0
 
     state = load_state()
     client = BackendClient(args.backend, dry_run=args.dry_run)
@@ -432,9 +455,8 @@ def main() -> int:
         if not args.dry_run and str(payload.get("hook_event_name") or "") == "Stop":
             print("{}")
         return 0
-    except RuntimeError as exc:
-        print(f"Codex hook adapter failed: {exc}", file=sys.stderr)
-        return 1
+    except RuntimeError:
+        return 0
 
 
 if __name__ == "__main__":

@@ -45,7 +45,7 @@ agentboard/
 ```bash
 cd backend
 pip3 install -r requirements.txt
-uvicorn app.main:app --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 2. 启动前端
@@ -54,6 +54,12 @@ uvicorn app.main:app --reload
 cd frontend
 npm install
 npm run dev
+```
+
+如果前端不是从本机浏览器访问后端，记得额外配置 API 地址：
+
+```bash
+VITE_API_BASE_URL=http://your-server-ip:8000 npm run dev
 ```
 
 3. 运行 mock runner

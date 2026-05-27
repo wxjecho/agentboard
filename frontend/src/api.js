@@ -1,4 +1,14 @@
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
+function inferDefaultApiBaseUrl() {
+  if (typeof window === "undefined") {
+    return "http://127.0.0.1:8000";
+  }
+
+  const protocol = window.location.protocol === "https:" ? "https:" : "http:";
+  const hostname = window.location.hostname || "127.0.0.1";
+  return `${protocol}//${hostname}:8000`;
+}
+
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || inferDefaultApiBaseUrl()).replace(/\/$/, "");
 
 function makeWebSocketUrl() {
   const url = new URL(API_BASE_URL);

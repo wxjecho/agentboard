@@ -5,6 +5,7 @@ import json
 import os
 import re
 import sys
+import tempfile
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -14,8 +15,18 @@ from urllib import error, request
 
 
 DEFAULT_BACKEND = "http://127.0.0.1:8000"
-STATE_FILE = Path("/private/tmp/agentboard_claude_sessions.json")
+STATE_FILE = Path(tempfile.gettempdir()) / "agentboard_claude_sessions.json"
 MAX_TASK_LENGTH = 120
+HOOK_EVENT_NAMES = [
+    "SessionStart",
+    "UserPromptSubmit",
+    "PreToolUse",
+    "PostToolUse",
+    "PostToolUseFailure",
+    "Notification",
+    "Stop",
+    "SessionEnd",
+]
 
 
 @dataclass
@@ -55,6 +66,7 @@ class BackendClient:
             "agent_type": session.agent_type,
             "project": session.project,
             "task": session.task,
+            "cwd": session.cwd,
             "event_type": event_type,
             "timestamp": iso_now(),
             "payload": payload or {},
@@ -99,8 +111,99 @@ def load_state() -> dict[str, dict[str, Any]]:
 def save_state(state: dict[str, dict[str, Any]]) -> None:
     try:
         STATE_FILE.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
-    except OSError:
-        pass
+    except OSError as exc:
+        print(f"Could not persist Claude hook state to {STATE_FILE}: {exc}", file=sys.stderr)
+
+
+def load_stdin_json() -> dict[str, Any] | None:
+    chunks: list[bytes] = []
+    while True:
+        data = os.read(0, 65536)
+        if not data:
+            break
+        chunks.append(data)
+
+    if not chunks:
+        return None
+
+    raw = b"".join(chunks).decode("utf-8", errors="replace").strip()
+    if not raw:
+        return None
+
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError:
+        return None
+
+    return payload if isinstance(payload, dict) else None
+
+
+def build_hooks_config(command: str) -> dict[str, Any]:
+    command_hook = {"type": "command", "command": command}
+    return {
+        "hooks": {
+            "SessionStart": [
+                {
+                    "matcher": "startup|resume|clear|compact",
+                    "hooks": [command_hook],
+                }
+            ],
+            "UserPromptSubmit": [{"hooks": [command_hook]}],
+            "PreToolUse": [
+                {
+                    "matcher": "Bash|Edit|Write|MultiEdit|NotebookEdit",
+                    "hooks": [command_hook],
+                }
+            ],
+            "PostToolUse": [
+                {
+                    "matcher": "Bash|Edit|Write|MultiEdit|NotebookEdit",
+                    "hooks": [command_hook],
+                }
+            ],
+            "PostToolUseFailure": [
+                {
+                    "matcher": "Bash|Edit|Write|MultiEdit|NotebookEdit",
+                    "hooks": [command_hook],
+                }
+            ],
+            "Notification": [{"hooks": [command_hook]}],
+            "Stop": [{"hooks": [command_hook]}],
+            "SessionEnd": [
+                {
+                    "matcher": "clear|resume|logout|prompt_input_exit|other",
+                    "hooks": [command_hook],
+                }
+            ],
+        }
+    }
+
+
+def install_hooks(settings_path: Path, backend: str) -> None:
+    settings_path.parent.mkdir(parents=True, exist_ok=True)
+    if settings_path.exists():
+        try:
+            settings = json.loads(settings_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise RuntimeError(f"Could not read existing settings.json: {exc}") from exc
+        if not isinstance(settings, dict):
+            raise RuntimeError("Existing settings.json must contain a JSON object")
+    else:
+        settings = {}
+
+    hooks = settings.get("hooks")
+    if hooks is None:
+        hooks = {}
+        settings["hooks"] = hooks
+    elif not isinstance(hooks, dict):
+        raise RuntimeError("Existing settings.json has a non-object 'hooks' field")
+
+    command = f'python3 "{Path(__file__).resolve()}" --backend {backend}'
+    generated = build_hooks_config(command)["hooks"]
+    for event_name in HOOK_EVENT_NAMES:
+        hooks[event_name] = generated[event_name]
+
+    settings_path.write_text(json.dumps(settings, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def summarize_task(prompt: str) -> str:
@@ -379,16 +482,30 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--backend", default=DEFAULT_BACKEND, help="AgentBoard backend base URL")
     parser.add_argument("--project", default="", help="Optional project label override")
     parser.add_argument("--dry-run", action="store_true", help="Print backend payloads without sending them")
+    parser.add_argument("--install", action="store_true", help="Install Claude hooks into a settings.json file")
+    parser.add_argument(
+        "--settings-path",
+        default="",
+        help="Optional settings.json target path used with --install (default: .claude/settings.json in cwd)",
+    )
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
-    try:
-        payload = json.load(sys.stdin)
-    except json.JSONDecodeError as exc:
-        print(f"Invalid Claude hook payload: {exc}", file=sys.stderr)
-        return 1
+    if args.install:
+        settings_path = Path(args.settings_path).expanduser() if args.settings_path else Path.cwd() / ".claude" / "settings.json"
+        try:
+            install_hooks(settings_path, args.backend)
+            print(f"Installed Claude hooks into {settings_path}")
+            return 0
+        except RuntimeError as exc:
+            print(f"Claude hook install failed: {exc}", file=sys.stderr)
+            return 1
+
+    payload = load_stdin_json()
+    if payload is None:
+        return 0
 
     state = load_state()
     client = BackendClient(args.backend, dry_run=args.dry_run)
@@ -397,9 +514,8 @@ def main() -> int:
         handle_hook_event(client, state, payload, args.project)
         save_state(state)
         return 0
-    except RuntimeError as exc:
-        print(f"Claude hook adapter failed: {exc}", file=sys.stderr)
-        return 1
+    except RuntimeError:
+        return 0
 
 
 if __name__ == "__main__":
